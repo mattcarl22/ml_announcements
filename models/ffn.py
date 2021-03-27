@@ -59,50 +59,7 @@ def compile_network(model, optimizer_='adam', loss_='MSE', batch_size_=32, learn
 
 def load_data(split_weights = [0.6, 0.8]):
     print('Loading data...')
-    data = pd.read_excel('../data/final/macro_financial_announcement_data.xlsx',engine='openpyxl')
-
-    # Keep relevant dates
-    data = data[(data['weekend'] == 0) & (data['Date'] >= '1990-01-01') & (data['Date'] < '2020-01-01')]
-    data = data.reset_index(drop=True)
-
-    ### Keep relevant variables for analysis
-    vars = pd.read_excel('../data/final/varlist.xlsx',engine='openpyxl')
-
-    # The first column is the announcement variable; all subsequent columns are the features
-    var_list = [vars['Announcement Indicator'][0]]+list(vars['Main variables to include'].dropna())
-
-    data = data[var_list]
-
-    ### Fix missing data
-    # USD-EUR exchange rate
-    data['exchg_useur_d']=data['exchg_useur_d'].fillna(0)
-
-    # Fill other missing data with previous observation (for now) and drop other missing rows
-    data = data.ffill()
-    data = data.dropna()
-
-
-    y_data = data['FOMC'].to_numpy().reshape((-1, 1))
-    x_data = data.loc[:, data.columns != 'FOMC'].to_numpy()
-    split_vals = [int(data.shape[0] * split_weights[0]), int(data.shape[0] * split_weights[1])]
-    reshape = lambda data: data.reshape(data.shape[0], data.shape[1], 1)
-    x_train, x_validation, x_test = np.split(x_data, split_vals)
-    y_train, y_validation, y_test = list(map(reshape, np.split(y_data, split_vals)))
-
-    print('Data ready')
-    return {
-        'x_train': x_train,
-        'x_validation': x_validation,
-        'x_test': x_test,
-        'y_train': y_train,
-        'y_validation': y_validation,
-        'y_test': y_test
-    }
-
-
-def load_data_new(split_weights = [0.6, 0.8]):
-    print('Loading data...')
-    data = pd.read_excel('../data/final/data_analysis.xlsx',engine='openpyxl')
+    data = pd.read_excel('../data/final/data_analysis.xlsx',engine='openpyxl', index_col=0)
     y_data = data['FOMC'].to_numpy().reshape((-1, 1))
     x_data = data.loc[:, data.columns != 'FOMC'].to_numpy()
     split_vals = [int(data.shape[0] * split_weights[0]), int(data.shape[0] * split_weights[1])]
@@ -194,3 +151,4 @@ def multi_architecture_training():
         for lr in learning_rates:
             announcement_ffn(data = data, model_name=get_name(lr, shape), loss_='MSE', learning_rate_=lr, epochs=256, internal_shapes=shape)
 
+multi_architecture_training()
