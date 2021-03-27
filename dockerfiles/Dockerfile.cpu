@@ -1,0 +1,52 @@
+# Set the base image to Ubuntu
+FROM tensorflow/tensorflow:latest-py3-jupyter
+ENV TZ=Americas/Chicago
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# File Author / Maintainer
+MAINTAINER Sebastian Piedra 
+
+## for apt to be noninteractive
+ENV DEBIAN_FRONTEND noninteractive
+ENV DEBCONF_NONINTERACTIVE_SEEN true
+
+# Install git and TF dependencies
+RUN apt-get update && \
+    apt-get install -y tzdata && \
+    apt-get install -y --no-install-recommends libboost-all-dev && \
+    apt-get install -y software-properties-common \
+    git \
+    wget \
+    cmake \
+    python-zmq \
+    python-dev \
+    libzmq3-dev \
+    libssl-dev \
+    libgflags-dev \
+    libgoogle-glog-dev \
+    liblmdb-dev \
+    libatlas-base-dev \
+    libblas-dev \
+    liblapack-dev \
+    libgflags-dev \
+    libgoogle-glog-dev \
+    liblmdb-dev \
+    libprotobuf-dev \
+    libleveldb-dev \
+    libsnappy-dev \
+    libopencv-dev \
+    libhdf5-serial-dev \
+    protobuf-compiler
+
+COPY requirements.txt /root/
+
+RUN apt install -y graphviz
+
+RUN pip3 install -r /root/requirements.txt
+RUN rm /root/requirements.txt
+
+RUN pip3 install --upgrade tensorflow
+
+WORKDIR /root
+
+CMD ["/bin/bash"]
