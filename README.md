@@ -22,3 +22,12 @@ docker run -it -p 5000:5000 -v <path_to_source>:/root mla-image
 Use a different port if 5000 is busy for you. Replace <path_to_source> to your path to the source of the project. Do not include the < > symbols. 
 
 </ol>
+
+
+# Jupyter
+
+Running jupyter inside a docker container is almost the same as before. Run:
+```
+jupyter notebook --port=5000 --no-browser --ip=0.0.0.0 --allow-root
+```
+Then navigate to: ```http://localhost:5000```. The browser will ask you for a token, the token was printed in the terminal after running the previous command. 
