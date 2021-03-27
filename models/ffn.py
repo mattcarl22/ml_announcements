@@ -150,5 +150,4 @@ def multi_architecture_training():
     for shape in shapes:
         for lr in learning_rates:
             announcement_ffn(data = data, model_name=get_name(lr, shape), loss_='MSE', learning_rate_=lr, epochs=256, internal_shapes=shape)
-
-multi_architecture_training()
+        
