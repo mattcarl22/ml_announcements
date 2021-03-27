@@ -30,4 +30,7 @@ Running jupyter inside a docker container is almost the same as before. Run:
 ```
 jupyter notebook --port=5000 --no-browser --ip=0.0.0.0 --allow-root
 ```
-Then navigate to: ```http://localhost:5000```. The browser will ask you for a token, the token was printed in the terminal after running the previous command. 
+Then navigate to: ```http://localhost:5000```. The browser may ask you for a token, the token was printed in the terminal after running the previous command.
+
+Navigate to the notebook you want. For example, the notebook for the FFN is in models/ffn.ipynb, and the notebook for the difussion maps is in models/difussion_map.ipynb
+
