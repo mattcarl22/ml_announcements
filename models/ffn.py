@@ -59,10 +59,6 @@ def compile_network(model, optimizer_='adam', loss_='MSE', batch_size_=32, learn
 
 def load_data(split_weights = [0.6, 0.8]):
     print('Loading data...')
-    ### Read data
-    # path = "/Users/matthewcarl/Dropbox/research/ml_announcements/"
-    # os.chdir(path)
-
     data = pd.read_excel('../data/final/macro_financial_announcement_data.xlsx',engine='openpyxl')
 
     # Keep relevant dates
@@ -93,6 +89,27 @@ def load_data(split_weights = [0.6, 0.8]):
     x_train, x_validation, x_test = np.split(x_data, split_vals)
     y_train, y_validation, y_test = list(map(reshape, np.split(y_data, split_vals)))
 
+    print('Data ready')
+    return {
+        'x_train': x_train,
+        'x_validation': x_validation,
+        'x_test': x_test,
+        'y_train': y_train,
+        'y_validation': y_validation,
+        'y_test': y_test
+    }
+
+
+def load_data_new(split_weights = [0.6, 0.8]):
+    print('Loading data...')
+    data = pd.read_excel('../data/final/data_analysis.xlsx',engine='openpyxl')
+    y_data = data['FOMC'].to_numpy().reshape((-1, 1))
+    x_data = data.loc[:, data.columns != 'FOMC'].to_numpy()
+    split_vals = [int(data.shape[0] * split_weights[0]), int(data.shape[0] * split_weights[1])]
+    reshape = lambda data: data.reshape(data.shape[0], data.shape[1], 1)
+    x_train, x_validation, x_test = np.split(x_data, split_vals)
+    y_train, y_validation, y_test = list(map(reshape, np.split(y_data, split_vals)))
+    print('Data ready')
     return {
         'x_train': x_train,
         'x_validation': x_validation,
@@ -113,9 +130,8 @@ def plot_predictions(model, data, name):
     plt.savefig('./predictions/predictions_{0}.png'.format(name))
 
 
-def announcement_ffn(data = None, model_name='ffn_test', loss_='MSE', learning_rate_=0.0005, epochs=100, internal_shapes=[64, 64]):
+def announcement_ffn(data = None, model_name='ffn_test', loss_='MSE', learning_rate_=0.0005, epochs=100, internal_shapes=[64, 64], verbose=0):
     data = data if data else load_data()
-    print('Shape: {0}'.format(data['x_train'].shape[0]))
     model = build_network(
         features = data['x_train'].shape[0],
         ffn_node_sizes=internal_shapes,
@@ -123,13 +139,12 @@ def announcement_ffn(data = None, model_name='ffn_test', loss_='MSE', learning_r
     )
     
     compile_network(model, run_eagerly=False, loss_=loss_, learning_rate_=learning_rate_)
-
     model, history = train(
         x=data['x_train'],
         y=data['y_train'],
         validation_data=(data['x_validation'], data['y_validation']),
         # validation steps ? 
-        epochs=epochs, verbose=1,
+        epochs=epochs, verbose=verbose,
         model = model
     )
 
@@ -179,5 +194,3 @@ def multi_architecture_training():
         for lr in learning_rates:
             announcement_ffn(data = data, model_name=get_name(lr, shape), loss_='MSE', learning_rate_=lr, epochs=256, internal_shapes=shape)
 
-
-multi_architecture_training()

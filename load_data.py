@@ -20,15 +20,9 @@ import pandas as pd
 import numpy as np
 import os
 
-def load_data(user=os.getlogin(), output_excel=1):
-    if user=='matthewcarl':
-        path = "/Users/matthewcarl/Dropbox/research/ml_announcements/"
-    elif user=="": #Sebastian can enter his local username here: print(os.getlogin())
-        path = "" #Sebastian can enter his path here
-
-    ### Read data
-    os.chdir(path)
-    data = pd.read_excel('data/final/macro_financial_announcement_data.xlsx',engine='openpyxl')
+def load_data(output_excel=1):
+    print('Loading data...')
+    data = pd.read_excel('./data/final/macro_financial_announcement_data.xlsx',engine='openpyxl')
 
     # Keep relevant dates
     data = data[(data['weekend'] == 0) & (data['Date'] >= '1990-01-01') &
@@ -37,11 +31,10 @@ def load_data(user=os.getlogin(), output_excel=1):
     del data['Date']
 
     ### Keep relevant variables for analysis
-    vars = pd.read_excel('data/final/varlist.xlsx',engine='openpyxl')
+    vars = pd.read_excel('./data/final/varlist.xlsx',engine='openpyxl')
 
     # The first column is the announcement variable; all subsequent columns are the features
-    var_list = [vars['Announcement Indicator'][0]]+
-                list(vars['Main variables to include'].dropna())
+    var_list = [vars['Announcement Indicator'][0]] + list(vars['Main variables to include'].dropna())
     data = data[var_list]
 
     ### Fix missing data
@@ -53,15 +46,17 @@ def load_data(user=os.getlogin(), output_excel=1):
     data = data.dropna()
 
     if output_excel==1:
-        data.to_excel('data/final/data_analysis.xlsx', index=True,
+        data.to_excel('./data/final/data_analysis.xlsx', index=True,
                       index_label='Date', na_rep='NULL')
-    else:
-        return data
+
+    print('Data ready')
+
+    return data
 
 ### Example function call
 # 2 Arguments:
-#   1. user=os.getlogin() - don't need to change this (will read from your local machine)
-#   2. output_excel=1  - if you want to export the final data to an excel file
+#   1. output_excel=1  - if you want to export the final data to an excel file
 #                  =0  - if you want to return the data to memory
-load_data(user=os.getlogin(), output_excel=1)
+
+load_data(output_excel=1)
 #data=load_data(user=os.getlogin(), output_excel=0)
