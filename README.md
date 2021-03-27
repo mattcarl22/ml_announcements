@@ -34,3 +34,5 @@ Then navigate to: ```http://localhost:5000```. The browser may ask you for a tok
 
 Navigate to the notebook you want. For example, the notebook for the FFN is in models/ffn.ipynb, and the notebook for the difussion maps is in models/difussion_map.ipynb
 
+# Comments
+You need to use the same port everywhere. That is, if you are running the docker container in a different port, the jupyter notebook should run in the same port. 
